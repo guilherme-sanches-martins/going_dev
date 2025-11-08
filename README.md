@@ -86,25 +86,24 @@ npm run preview
 
 ## 👩‍💻 Equipe de Desenvolvimento
 
-| Nome            | Função        |
-| --------------- | ------------- |
-| [Seu Nome Aqui] | Frontend / UI |
-| [Outro Nome]    | Infra e Build |
-| [Outro Nome]    | Documentação  |
-
-> Atualize com os nomes e responsabilidades reais.
+| Nome                | Função       |
+| ------------------- | ------------ |
+| [Erik Benevides]    | Documentação |
+| [Guilherme Sanches] | Backend      |
+| [João Miler]        | UX Designer  |
+| [Mateus Lisboa]     | Suporte      |
+| [Arthur Silva]      | Suporte      |
 
 ---
 
 ## 🏫 Contexto
 
-Projeto de estudo/desenvolvimento com **React + Vite**. Ajuste esta seção caso o projeto esteja vinculado a uma disciplina, curso ou instituição.
+Projeto de estudo/desenvolvimento com **React + Vite** para o evento Programação Radical 2025 UNIVAG.
 
 ---
 
 ## ⚠️ Observações
 
-* Projeto com fins **educacionais** (ajuste conforme necessário).
-* Substitua placeholders (imagens, nomes e links) pelos dados reais do seu repositório.
+* Projeto com fins **educacionais**.
 
 ---
