@@ -15,7 +15,7 @@ type ViewMode = 'month' | 'week' | 'day' | 'agenda'
 type Props = {
   events: CalEvent[]
   title?: string
-  onDayChange?: (dateISO: string) => void // opcional, para sincronizar “Checklist”
+  onDayChange?: (dateISO: string) => void // opcional, para sincronizar com listas laterais
 }
 
 function toISODate(d: Date) {
@@ -103,9 +103,6 @@ export default function CalendarioEventos({ events, title = 'Calendário de Even
   // ---------- MONTH VIEW ----------
   function renderMonth() {
     const start = startOfMonth(cursor)
-    const end = endOfMonth(cursor)
-
-    // grade de 6x7 começando na segunda
     const gridStart = startOfWeek(start)
     const days: Date[] = []
     for (let i = 0; i < 42; i++) {
@@ -170,7 +167,7 @@ export default function CalendarioEventos({ events, title = 'Calendário de Even
                 <ul className="text-xs space-y-1">
                   {list.map((e) => (
                     <li key={e.id} className="px-2 py-1 rounded bg-slate-50">
-                      <b>{e.time || '--:--'}</b> — {e.title}
+                      <b>{e.time || '--:--'}</b> - {e.title}
                     </li>
                   ))}
                 </ul>
@@ -197,7 +194,7 @@ export default function CalendarioEventos({ events, title = 'Calendário de Even
           <ul className="text-sm space-y-2">
             {list.map((e) => (
               <li key={e.id} className="p-2 rounded bg-slate-50">
-                <div><b>{e.time || '--:--'}</b> — {e.title}</div>
+                <div><b>{e.time || '--:--'}</b> - {e.title}</div>
                 {e.location && <div className="text-xs text-grayb-500">{e.location}</div>}
               </li>
             ))}
@@ -223,13 +220,13 @@ export default function CalendarioEventos({ events, title = 'Calendário de Even
                 {d.toLocaleDateString('pt-BR', { weekday: 'short', day: '2-digit', month: 'short' })}
               </div>
               {list.length === 0 ? (
-                <div className="text-xs text-grayb-400">—</div>
+                <div className="text-xs text-grayb-400">-</div>
               ) : (
                 <ul className="text-sm space-y-1">
                   {list.map((e) => (
                     <li key={e.id} className="px-2 py-1 rounded bg-slate-50">
-                      <b>{e.time || '--:--'}</b> — {e.title}
-                      {e.location && <span className="text-xs text-grayb-500"> • {e.location}</span>}
+                      <b>{e.time || '--:--'}</b> - {e.title}
+                      {e.location && <span className="text-xs text-grayb-500"> - {e.location}</span>}
                     </li>
                   ))}
                 </ul>
@@ -271,3 +268,4 @@ export default function CalendarioEventos({ events, title = 'Calendário de Even
     </section>
   )
 }
+

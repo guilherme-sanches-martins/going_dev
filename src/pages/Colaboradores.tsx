@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+﻿import { useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { doc, updateDoc } from 'firebase/firestore'
 import { db } from '../firebaseConfig'
@@ -28,7 +28,7 @@ export default function Colaboradores() {
   const aprovadas = useMemo(() => marketing.filter(s => APROVADAS_SET.has(s.status as string)), [marketing])
   const recusadas = useMemo(() => marketing.filter(s => RECUSADAS_SET.has(s.status as string)), [marketing])
 
-  // ----------- APROVAÇÕES MK -----------
+  // ----------- APROVAÃ‡Ã•ES MK -----------
   async function aprovarEtapa(
     id: string,
     etapa: 'coordenador' | 'diretor' | 'vice',
@@ -51,8 +51,8 @@ export default function Colaboradores() {
       await updateDoc(ref, payload)
       alert(`Etapa ${etapa} ${aprovado ? 'aprovada' : 'reprovada'} com sucesso!`)
     } catch (e) {
-      console.error('Erro ao atualizar aprovação:', e)
-      alert('Erro ao atualizar aprovação.')
+      console.error('Erro ao atualizar aprovaÃ§Ã£o:', e)
+      alert('Erro ao atualizar aprovaÃ§Ã£o.')
     }
   }
 
@@ -66,16 +66,16 @@ export default function Colaboradores() {
     return reservas.map(r => {
       const eq = equipamentos.find(e => e.id === r.equipamentoId)
       return {
-        sala: r.salaId || '—',
+        sala: r.salaId || 'â€”',
         hora: (r as any).hora || '-',
-        equipamento: eq ? eq.nome : '—',
-        tipo: eq ? eq.tipo : '—',
+        equipamento: eq ? eq.nome : 'â€”',
+        tipo: eq ? eq.tipo : 'â€”',
         solicitante: r.solicitante,
       }
     })
   }, [reservas, equipamentos])
 
-  // ----------- CALENDÁRIO INTEGRADO -----------
+  // ----------- CALENDÃRIO INTEGRADO -----------
   const eventosCalendario: CalEvent[] = useMemo(() => {
     const list: CalEvent[] = []
 
@@ -85,14 +85,14 @@ export default function Colaboradores() {
         id: `av-${r.id}`,
         date: r.data,
         time: (r as any).hora || undefined,
-        title: `AV: ${r.solicitante} — ${r.salaId || 'Local não definido'}`,
+        title: `AV: ${r.solicitante} - ${r.salaId || 'Local não definido'}`,
         location: r.salaId || undefined,
         setor: 'av',
         status: r.status,
       })
     })
 
-    // solicitações MK aprovadas
+    // solicitaÃ§Ãµes MK aprovadas
     marketing
       .filter(m => m.status === 'em_andamento' || m.status === 'concluida')
       .forEach(m => {
@@ -116,7 +116,7 @@ export default function Colaboradores() {
     [eventosCalendario, diaSelecionado]
   )
 
-  // ----------- AGENDA AV (por horário) -----------
+  // ----------- AGENDA AV (por horÃ¡rio) -----------
   function gerarSlots(min: string, max: string, passoMin: number) {
     const [minH, minM] = min.split(':').map(Number)
     const [maxH, maxM] = max.split(':').map(Number)
@@ -158,6 +158,19 @@ export default function Colaboradores() {
     }
   }
 
+  async function confirmarReserva(id: string) {
+    try {
+      await updateDoc(doc(db, 'reservas', id), {
+        status: 'aprovado',
+        aprovadoEm: new Date().toISOString(),
+      } as any)
+      alert('Reserva confirmada.')
+    } catch (e) {
+      console.error('Erro ao confirmar reserva:', e)
+      alert('Erro ao confirmar reserva.')
+    }
+  }
+
   // =====================================================
   // ====================== RENDER ========================
   // =====================================================
@@ -188,73 +201,73 @@ export default function Colaboradores() {
           <button className={`tab ${tab === 'ce' ? 'tab-active' : ''}`} onClick={() => setTab('ce')}>Cerimonial</button>
         </div>
 
-        {/* BOTÃO EQUIPE MK */}
+        {/* BOTÃƒO EQUIPE MK */}
         {tab === 'mk' && (
           <div className="mb-5 flex justify-end">
             <button
               onClick={() => navigate('/equipe/marketing')}
               className="btn btn-dark hover:brightness-110 transition"
             >
-              📋 Acessar Painel da Equipe de Marketing
+              Acessar Painel da Equipe de Marketing
             </button>
           </div>
         )}
 
-        {/* CONTEÚDO DE CADA ABA */}
+        {/* CONTEÃšDO DE CADA ABA */}
         {tab === 'mk' ? (
-          // ===================== MARKETING =====================
-          <div className="grid md:grid-cols-3 gap-4">
-            {/* PENDENTE */}
-            <div>
-              <h4 className="font-medium mb-2">Pendente</h4>
-              {pendentes.length === 0 ? (
-                <p className="text-grayb-400 text-sm">Nenhuma solicitação</p>
-              ) : (
-                <ul className="text-sm grid gap-3">
-                  {pendentes.map(p => (
-                    <li key={p.id} className="border border-grayb-100 rounded-lg p-3">
-                      <b>{p.titulo}</b> — {p.solicitante}
-                      <div className="mt-2 text-xs text-grayb-600">
-                        📅 {p.data} às {p.horario || '—'} | Local: {p.local}
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
+  // ===================== MARKETING =====================
+  <div className="grid md:grid-cols-3 gap-4">
+    {/* PENDENTE */}
+    <div>
+      <h4 className="font-medium mb-2">Pendente</h4>
+      {pendentes.length === 0 ? (
+        <p className="text-grayb-400 text-sm">Nenhuma solicitacao</p>
+      ) : (
+        <ul className="text-sm grid gap-3">
+          {pendentes.map(p => (
+            <li key={p.id} className="border border-grayb-100 rounded-lg p-3">
+              <b>{p.titulo}</b> - {p.solicitante}
+              <div className="mt-2 text-xs text-grayb-600">
+                {p.data} {p.horario || '-'} | Local: {p.local}
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
 
-            {/* APROVADAS */}
-            <div>
-              <h4 className="font-medium mb-2">Aprovado</h4>
-              {aprovadas.length === 0 ? (
-                <p className="text-grayb-400 text-sm">Nenhuma solicitação</p>
-              ) : (
-                <ul className="text-sm grid gap-1">
-                  {aprovadas.map(a => (
-                    <li key={a.id} className="border-b border-grayb-100 pb-1">
-                      <b>{a.titulo}</b> — {a.solicitante}
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
+    {/* APROVADAS */}
+    <div>
+      <h4 className="font-medium mb-2">Aprovado</h4>
+      {aprovadas.length === 0 ? (
+        <p className="text-grayb-400 text-sm">Nenhuma solicitacao</p>
+      ) : (
+        <ul className="text-sm grid gap-1">
+          {aprovadas.map(a => (
+            <li key={a.id} className="border-b border-grayb-100 pb-1">
+              <b>{a.titulo}</b> - {a.solicitante}
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
 
-            {/* RECUSADAS */}
-            <div>
-              <h4 className="font-medium mb-2">Recusado</h4>
-              {recusadas.length === 0 ? (
-                <p className="text-grayb-400 text-sm">Nenhuma solicitação</p>
-              ) : (
-                <ul className="text-sm grid gap-1">
-                  {recusadas.map(r => (
-                    <li key={r.id} className="border-b border-grayb-100 pb-1">
-                      <b>{r.titulo}</b> — {r.solicitante}
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-          </div>
+    {/* RECUSADAS */}
+    <div>
+      <h4 className="font-medium mb-2">Recusado</h4>
+      {recusadas.length === 0 ? (
+        <p className="text-grayb-400 text-sm">Nenhuma solicitacao</p>
+      ) : (
+        <ul className="text-sm grid gap-1">
+          {recusadas.map(r => (
+            <li key={r.id} className="border-b border-grayb-100 pb-1">
+              <b>{r.titulo}</b> - {r.solicitante}
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  </div>
         ) : tab === 'ce' ? (
           // ===================== CERIMONIAL =====================
           <div className="grid lg:grid-cols-3 gap-4 items-start">
@@ -275,7 +288,7 @@ export default function Colaboradores() {
                 <ul className="text-sm space-y-2">
                   {eventosDoDia.map(ev => (
                     <li key={ev.id} className="p-2 rounded bg-slate-50">
-                      <div><b>{ev.time || '--:--'}</b> — {ev.title}</div>
+                      <div><b>{ev.time || '--:--'}</b> â€” {ev.title}</div>
                       {ev.location && <div className="text-xs text-grayb-500">{ev.location}</div>}
                     </li>
                   ))}
@@ -284,12 +297,12 @@ export default function Colaboradores() {
             </aside>
           </div>
         ) : (
-          // ===================== AUDIOVISUAL (sem calendário) =====================
+          // ===================== AUDIOVISUAL (sem calendÃ¡rio) =====================
           <div>
-            <h4 className="font-medium mb-2">Agenda do dia — Audiovisual</h4>
-            <p className="text-grayb-400 text-sm mb-3">
-              Use o botão acima para gerenciar os equipamentos do setor.
-            </p>
+            <h4 className="font-medium mb-2">Agenda do dia - Audiovisual</h4>
+            <p className="text-grayb-400 text-sm mb-3">Use o botao acima para gerenciar os equipamentos do setor.</p>
+
+
           </div>
         )}
       </section>
@@ -298,8 +311,8 @@ export default function Colaboradores() {
         <section className="card p-4">
           <div className="flex items-end gap-3 mb-3">
             <div>
-              <h4 className="font-medium">Agenda do dia ?" Audiovisual</h4>
-              <p className="text-sm text-grayb-400 -mt-1">Visualize salas e equipamentos por hor1rio</p>
+              <h4 className="font-medium">Agenda do dia - Audiovisual</h4>
+              <p className="text-sm text-grayb-400 -mt-1">Visualize salas e equipamentos por horario</p>
             </div>
             <div className="ml-auto">
               <label className="text-sm">
@@ -319,9 +332,9 @@ export default function Colaboradores() {
               <thead>
                 <tr className="text-left text-grayb-400 border-b border-grayb-100">
                   <th className="py-2 px-2 w-24">Hora</th>
-                  <th className="px-2">Solicita15es (Sala/Equipamento/Solicitante)</th>
+                  <th className="px-2">Solicitacoes (Sala/Equipamento/Solicitante)</th>
                   <th className="px-2 w-28">Status</th>
-                  <th className="px-2 w-36">A15es</th>
+                  <th className="px-2 w-36">Acoes</th>
                 </tr>
               </thead>
               <tbody>
@@ -332,7 +345,7 @@ export default function Colaboradores() {
                       <td className="py-2 px-2 text-grayb-500">{h}</td>
                       <td className="px-2">
                         {list.length === 0 ? (
-                          <span className="text-grayb-300">—</span>
+                          <span className="text-grayb-300">-</span>
                         ) : (
                           <ul className="grid gap-1">
                             {list.map((r) => {
@@ -341,8 +354,8 @@ export default function Colaboradores() {
                               return (
                                 <li key={r.id} className="p-2 rounded bg-slate-50">
                                   <div>
-                                    <b>{r.salaId || localUso || 'Local n1o definido'}</b>
-                                    {eq && <span className="text-grayb-500"> — {eq.identificacao} · {eq.nome}</span>}
+                                    <b>{r.salaId || localUso || 'Local nao definido'}</b>
+                                    {eq && <span className="text-grayb-500"> - {eq.identificacao} - {eq.nome}</span>}
                                   </div>
                                   <div className="text-xs text-grayb-500">Solicitante: {r.solicitante}</div>
                                 </li>
@@ -372,15 +385,25 @@ export default function Colaboradores() {
                         {list.length === 0 ? null : (
                           <div className="grid gap-1">
                             {list.map((r) => (
-                              <button
-                                key={r.id}
-                                className="btn btn-xs btn-outline"
-                                disabled={r.status !== 'aprovado'}
-                                onClick={() => cancelarReserva(r.id)}
-                                title={r.status === 'aprovado' ? 'Cancelar reserva confirmada' : 'Dispon1vel apenas para confirmadas'}
-                              >
-                                Cancelar
-                              </button>
+                              <div key={r.id} className="flex items-center gap-2">
+                                {r.status === 'pendente' && (
+                                  <button
+                                    className="btn btn-xs btn-dark"
+                                    onClick={() => confirmarReserva(r.id)}
+                                    title="Confirmar reserva"
+                                  >
+                                    Confirmar
+                                  </button>
+                                )}
+                                <button
+                                  className="btn btn-xs btn-outline"
+                                  disabled={r.status === 'cancelado'}
+                                  onClick={() => cancelarReserva(r.id)}
+                                  title={r.status === 'aprovado' ? 'Cancelar reserva confirmada' : (r.status === 'pendente' ? 'Cancelar reserva pendente' : 'Ja cancelada')}
+                                >
+                                  Cancelar
+                                </button>
+                              </div>
                             ))}
                           </div>
                         )}
@@ -436,7 +459,7 @@ export default function Colaboradores() {
 
         <div className="flex items-center gap-4 text-sm mb-4">
           <div className="flex items-center gap-2">
-            <span className="w-3 h-3 bg-ok rounded-full"></span>Disponível
+            <span className="w-3 h-3 bg-ok rounded-full"></span>Disponivel
           </div>
           <div className="flex items-center gap-2">
             <span className="w-3 h-3 bg-bad rounded-full"></span>Reservada
@@ -476,3 +499,10 @@ export default function Colaboradores() {
     </div>
   )
 }
+
+
+
+
+
+
+

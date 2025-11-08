@@ -1,4 +1,4 @@
-// src/modules/cerimonial/CerimonialPainel.tsx
+﻿// src/modules/cerimonial/CerimonialPainel.tsx
 import { useEffect, useState } from 'react'
 import CalendarioCerimonial from './CalendarioCerimonial'
 import ChecklistTarefas from './ChecklistTarefas'
@@ -20,12 +20,12 @@ export default function CerimonialPainel() {
   return (
     <div className="grid md:grid-cols-3 gap-4">
       <div className="md:col-span-2">
-        <h4 className="font-medium mb-2">📅 Calendário de Eventos</h4>
+        <h4 className="font-medium mb-2">Calendário de Eventos</h4>
         <CalendarioCerimonial eventos={eventos} />
       </div>
 
       <div>
-        <h4 className="font-medium mb-2">🧾 Checklist de Tarefas</h4>
+        <h4 className="font-medium mb-2">Checklist de Tarefas</h4>
         <ChecklistTarefas eventos={eventos} />
       </div>
     </div>

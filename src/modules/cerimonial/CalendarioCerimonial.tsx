@@ -20,7 +20,7 @@ const localizer = dateFnsLocalizer({
   parse,
   startOfWeek,
   getDay,
-  locales
+  locales,
 })
 
 export default function CalendarioCerimonial({ eventos }: { eventos: Evento[] }) {
@@ -37,7 +37,7 @@ export default function CalendarioCerimonial({ eventos }: { eventos: Evento[] })
     data.setHours(parseInt(hora), parseInt(minuto))
     return {
       id: ev.id,
-      title: `${ev.titulo} — ${ev.local}`,
+      title: `${ev.titulo} - ${ev.local}`,
       start: data,
       end: new Date(data.getTime() + 60 * 60 * 1000),
     }
@@ -46,7 +46,7 @@ export default function CalendarioCerimonial({ eventos }: { eventos: Evento[] })
   function handleSelectSlot(slotInfo: any) {
     const dataSelecionada = slotInfo.start.toISOString().slice(0, 10)
     const hora = slotInfo.start.toTimeString().slice(0, 5)
-    alert(`🆕 Novo evento em ${dataSelecionada} às ${hora}`)
+    alert(`Novo evento em ${dataSelecionada} às ${hora}`)
   }
 
   return (
@@ -64,7 +64,7 @@ export default function CalendarioCerimonial({ eventos }: { eventos: Evento[] })
 
         <button
           className="btn btn-sm btn-dark"
-          onClick={() => alert('🆕 abrir modal de novo evento')}
+          onClick={() => alert('Abrir modal de novo evento')}
         >
           Novo Evento
         </button>
@@ -95,7 +95,7 @@ export default function CalendarioCerimonial({ eventos }: { eventos: Evento[] })
         <ul className="text-sm grid gap-2 mt-4">
           {filtrados.map((ev) => (
             <li key={ev.id} className="border border-grayb-100 rounded-lg p-2">
-              <b>{ev.titulo}</b> — {ev.local}
+              <b>{ev.titulo}</b> - {ev.local}
               <p className="text-xs text-grayb-400">
                 {ev.data} às {ev.horario}
               </p>
@@ -106,3 +106,4 @@ export default function CalendarioCerimonial({ eventos }: { eventos: Evento[] })
     </div>
   )
 }
+
