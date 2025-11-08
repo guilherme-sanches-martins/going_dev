@@ -29,8 +29,6 @@ Aplicar os principais conceitos de **desenvolvimento frontend com React e Vite**
 * 🔎 **Linting e Formatação:** configuração de ESLint/Prettier para padronizar código
 * 📦 **Build e Preview:** scripts prontos para desenvolvimento e produção
 
-> Obs.: Adapte esta lista às features reais do seu projeto.
-
 ---
 
 ## 🖼️ Telas Principais
