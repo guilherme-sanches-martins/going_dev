@@ -40,30 +40,6 @@ Aplicar os principais conceitos de **desenvolvimento frontend com React e Vite**
 
 ---
 
-## 🗂️ Estrutura de Pastas
-
-```
-GOING_DEV/
-│
-├── src/
-│   ├── assets/                # Ícones, imagens, fontes
-│   ├── components/            # Componentes reutilizáveis de UI
-│   ├── pages/                 # Páginas (se usar React Router)
-│   ├── styles/                # Estilos globais / CSS Modules
-│   ├── App.tsx                # Raiz da aplicação
-│   └── main.tsx               # Ponto de entrada (Vite)
-│
-├── public/                    # Arquivos estáticos
-├── index.html                 # HTML principal
-├── package.json               # Dependências e scripts
-├── tsconfig.json              # Configuração TypeScript
-├── vite.config.ts             # Configuração do Vite
-├── eslint.config.js           # Regras de lint (opcional)
-└── README.md
-```
-
----
-
 ## ⚙️ Instalação e Execução
 
 ```bash
