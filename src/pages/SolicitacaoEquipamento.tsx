@@ -12,25 +12,28 @@ function iso(d: Date) {
 
 export default function SolicitacaoEquipamento() {
   // Estados principais
+  const [tipoReserva, setTipoReserva] = useState<'sala' | 'equipamento' | 'ambos'>('ambos')
   const [data, setData] = useState<string>(iso(new Date()))
-  const [hora, setHora] = useState<string>('') 
+  const [hora, setHora] = useState<string>('')
   const [periodo, setPeriodo] = useState<Periodo>('matutino')
   const [bloco, setBloco] = useState<'B' | 'C' | 'D'>('B')
   const [salaId, setSalaId] = useState<string>('')
   const [equipamentoId, setEquipamentoId] = useState<string>('')
+  const [localUso, setLocalUso] = useState<string>('') // novo campo
   const [solicitante, setSolicitante] = useState<string>('')
 
   // Firestore hooks
   const reservasFirestore = useReservasPorSlot(data, periodo)
   const equipamentosFirestore = useEquipamentos()
 
-  // Salas reservadas (Firestore)
-  const salasReservadas = useMemo(
-    () => reservasFirestore.map((r) => r.salaId),
-    [reservasFirestore]
-  )
+  // Salas reservadas
+const salasReservadas = useMemo(
+  () => reservasFirestore.map((r) => r.salaId).filter((id): id is string => !!id),
+  [reservasFirestore]
+)
 
-  // Equipamentos disponíveis (somente os com status "disponivel" e não reservados)
+
+  // Equipamentos disponíveis
   const equipamentosDisponiveis = useMemo<Equipamento[]>(() => {
     const ocupados = new Set(reservasFirestore.map((r) => r.equipamentoId))
     return equipamentosFirestore.filter(
@@ -48,32 +51,35 @@ export default function SolicitacaoEquipamento() {
     }
   }
 
-  // 🧩 Seleção no mapa → identifica bloco corretamente
+  // Seleção no mapa
   function onSelectSalaFromMap(id: string) {
     setSalaId(id)
     let blocoDetectado: 'B' | 'C' | 'D' = 'B'
-
-    if (id.startsWith('AUD_')) {
-      const match = id.match(/^AUD_([BCD])/)
-      if (match && ['B', 'C', 'D'].includes(match[1])) {
-        blocoDetectado = match[1] as 'B' | 'C' | 'D'
-      }
-    } else {
-      const prefix = id[0]
-      if (['B', 'C', 'D'].includes(prefix)) {
-        blocoDetectado = prefix as 'B' | 'C' | 'D'
-      }
-    }
-
+    const prefix = id[0]
+    if (['B', 'C', 'D'].includes(prefix)) blocoDetectado = prefix as 'B' | 'C' | 'D'
     setBloco(blocoDetectado)
   }
 
-  // 📝 Enviar solicitação → valida e grava no Firestore
+  // Envio de solicitação
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
 
-    if (!solicitante || !equipamentoId || !data || !hora || !periodo || !salaId) {
-      alert('Preencha solicitante, equipamento, data, hora, período e sala.')
+    if (!solicitante) {
+      alert('Informe o nome do solicitante.')
+      return
+    }
+
+    // Validações conforme tipo
+    if (tipoReserva !== 'equipamento' && !salaId) {
+      alert('Selecione uma sala.')
+      return
+    }
+    if (tipoReserva !== 'sala' && !equipamentoId) {
+      alert('Selecione um equipamento.')
+      return
+    }
+    if (tipoReserva !== 'sala' && !localUso) {
+      alert('Informe o local de uso do equipamento.')
       return
     }
 
@@ -84,30 +90,38 @@ export default function SolicitacaoEquipamento() {
     }
 
     try {
-      // 🔎 Busca conflitos no mesmo horário/sala
-      const reservasRef = collection(db, 'reservas')
-      const q = query(
-        reservasRef,
-        where('data', '==', data),
-        where('periodo', '==', periodo),
-        where('salaId', '==', salaId),
-        where('hora', '==', hora)
-      )
+      // 🔎 Verifica conflito de sala
+      if (tipoReserva !== 'equipamento') {
+        const reservasRef = collection(db, 'reservas')
+        const q = query(
+          reservasRef,
+          where('data', '==', data),
+          where('periodo', '==', periodo),
+          where('salaId', '==', salaId),
+          where('hora', '==', hora)
+        )
 
-      const snapshot = await getDocs(q)
-      if (!snapshot.empty) {
-        alert('❌ Já existe uma reserva para esta sala neste horário.')
-        return
+        const snapshot = await getDocs(q)
+        if (!snapshot.empty) {
+          alert('❌ Já existe uma reserva para esta sala neste horário.')
+          return
+        }
       }
 
-      // ✅ Nenhum conflito → grava nova reserva
-      const novaReserva: Omit<ReservaItem, 'id'> & { hora: string } = {
+      // ✅ Grava nova reserva
+      const novaReserva: Omit<ReservaItem, 'id'> & {
+        hora: string
+        tipoReserva: string
+        localUso?: string | null
+      } = {
+        tipoReserva,
         data,
         hora,
         periodo,
         bloco,
-        salaId,
-        equipamentoId,
+        salaId: tipoReserva !== 'equipamento' ? salaId : null,
+        equipamentoId: tipoReserva !== 'sala' ? equipamentoId : null,
+        localUso: tipoReserva !== 'sala' ? localUso : null,
         solicitante,
         status: 'pendente',
       }
@@ -117,9 +131,10 @@ export default function SolicitacaoEquipamento() {
 
       setEquipamentoId('')
       setSalaId('')
+      setLocalUso('')
       setHora('')
 
-      alert('✅ Solicitação enviada e salva no Firestore!')
+      alert('✅ Solicitação enviada com sucesso!')
     } catch (error) {
       console.error('Erro ao verificar/salvar reserva:', error)
       alert('❌ Erro ao processar a solicitação no servidor.')
@@ -132,13 +147,27 @@ export default function SolicitacaoEquipamento() {
       {/* Formulário */}
       <section className="card p-6">
         <h2 className="text-lg font-semibold mb-1">
-          Solicitação de Equipamento Audiovisual
+          Solicitação de Equipamento / Sala Audiovisual
         </h2>
         <p className="text-sm text-grayb-400 mb-6">
-          Preencha os dados para reservar equipamentos
+          Preencha os dados para reservar equipamentos e/ou salas
         </p>
 
         <form onSubmit={handleSubmit} className="grid gap-4">
+          {/* Tipo de reserva */}
+          <div>
+            <label className="block text-sm text-grayb-400 mb-1">Tipo de reserva</label>
+            <select
+              value={tipoReserva}
+              onChange={(e) => setTipoReserva(e.target.value as any)}
+              className="select bg-grayb-50"
+            >
+              <option value="sala">Apenas Sala</option>
+              <option value="equipamento">Apenas Equipamento</option>
+              <option value="ambos">Sala + Equipamento</option>
+            </select>
+          </div>
+
           {/* Nome */}
           <div>
             <label className="block text-sm text-grayb-400 mb-1">
@@ -192,40 +221,58 @@ export default function SolicitacaoEquipamento() {
           </div>
 
           {/* Equipamento */}
-          <div>
-            <label className="block text-sm text-grayb-400 mb-1">
-              Equipamento (apenas disponíveis) *
-            </label>
-            <select
-              value={equipamentoId}
-              onChange={(e) => setEquipamentoId(e.target.value)}
-              className="select bg-grayb-50"
-            >
-              <option value="">Selecione...</option>
-              {equipamentosDisponiveis.map((eq) => (
-                <option key={eq.id} value={eq.id}>
-                  {eq.identificacao} — {eq.nome} ({eq.tipo}, Bloco {eq.bloco})
-                </option>
-              ))}
-            </select>
-          </div>
+          {(tipoReserva === 'equipamento' || tipoReserva === 'ambos') && (
+            <>
+              <div>
+                <label className="block text-sm text-grayb-400 mb-1">
+                  Equipamento (apenas disponíveis) *
+                </label>
+                <select
+                  value={equipamentoId}
+                  onChange={(e) => setEquipamentoId(e.target.value)}
+                  className="select bg-grayb-50"
+                >
+                  <option value="">Selecione...</option>
+                  {equipamentosDisponiveis.map((eq) => (
+                    <option key={eq.id} value={eq.id}>
+                      {eq.identificacao} — {eq.nome} ({eq.tipo}, Bloco {eq.bloco})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm text-grayb-400 mb-1">
+                  Local de uso (se diferente da sala) *
+                </label>
+                <input
+                  value={localUso}
+                  onChange={(e) => setLocalUso(e.target.value)}
+                  className="input bg-grayb-50"
+                  placeholder="Ex: Auditório C01"
+                />
+              </div>
+            </>
+          )}
 
           {/* Bloco + Sala */}
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm text-grayb-400 mb-1">Bloco</label>
-              <input value={bloco} readOnly className="input bg-grayb-50" />
+          {(tipoReserva === 'sala' || tipoReserva === 'ambos') && (
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm text-grayb-400 mb-1">Bloco</label>
+                <input value={bloco} readOnly className="input bg-grayb-50" />
+              </div>
+              <div>
+                <label className="block text-sm text-grayb-400 mb-1">Sala</label>
+                <input
+                  value={salaId}
+                  readOnly
+                  placeholder="Clique no mapa"
+                  className="input bg-grayb-50"
+                />
+              </div>
             </div>
-            <div>
-              <label className="block text-sm text-grayb-400 mb-1">Sala</label>
-              <input
-                value={salaId}
-                readOnly
-                placeholder="Clique no mapa"
-                className="input bg-grayb-50"
-              />
-            </div>
-          </div>
+          )}
 
           <button type="submit" className="btn btn-dark mt-2">
             Enviar Solicitação
@@ -252,9 +299,9 @@ export default function SolicitacaoEquipamento() {
                   const eq = equipamentosFirestore.find((e) => e.id === r.equipamentoId)
                   return (
                     <tr key={r.id} className="border-b border-grayb-100">
-                      <td className="py-1">{r.salaId}</td>
+                      <td className="py-1">{r.salaId || '-'}</td>
                       <td>{(r as any).hora || '-'}</td>
-                      <td>{eq ? `${eq.identificacao} — ${eq.nome}` : 'Equipamento removido'}</td>
+                      <td>{eq ? `${eq.identificacao} — ${eq.nome}` : '—'}</td>
                       <td>{r.solicitante}</td>
                     </tr>
                   )
@@ -266,24 +313,26 @@ export default function SolicitacaoEquipamento() {
       </section>
 
       {/* Mapa */}
-      <section className="card p-4">
-        <h3 className="font-medium mb-2">Mapa de Salas</h3>
-        <p className="text-sm text-grayb-400 mb-3">
-          Visualize a disponibilidade das salas
-        </p>
-        <MapaSVG
-          salasReservadas={salasReservadas}
-          onSelectSala={onSelectSalaFromMap}
-        />
-        <div className="flex items-center gap-4 text-sm mt-3">
-          <div className="flex items-center gap-2">
-            <span className="w-3 h-3 bg-ok rounded-full"></span>Disponível
+      {(tipoReserva === 'sala' || tipoReserva === 'ambos') && (
+        <section className="card p-4">
+          <h3 className="font-medium mb-2">Mapa de Salas</h3>
+          <p className="text-sm text-grayb-400 mb-3">
+            Visualize a disponibilidade das salas
+          </p>
+          <MapaSVG
+            salasReservadas={salasReservadas}
+            onSelectSala={onSelectSalaFromMap}
+          />
+          <div className="flex items-center gap-4 text-sm mt-3">
+            <div className="flex items-center gap-2">
+              <span className="w-3 h-3 bg-ok rounded-full"></span>Disponível
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="w-3 h-3 bg-bad rounded-full"></span>Reservada
+            </div>
           </div>
-          <div className="flex items-center gap-2">
-            <span className="w-3 h-3 bg-bad rounded-full"></span>Reservada
-          </div>
-        </div>
-      </section>
+        </section>
+      )}
     </div>
   )
 }
