@@ -12,16 +12,17 @@ export interface Equipamento {
 }
 
 export interface ReservaItem {
-  id: string;
-  data: string;
-  periodo: Periodo;
-  bloco: 'B' | 'C' | 'D';
-  salaId: string;
-  equipamentoId: string;
-  solicitante: string;
-  observacoes?: string;
-  status: 'pendente' | 'aprovado';
+  id: string
+  data: string
+  periodo: Periodo
+  bloco: 'B' | 'C' | 'D'
+  salaId: string | null        // agora pode ser null
+  equipamentoId: string | null // agora pode ser null
+  solicitante: string
+  observacoes?: string
+  status: 'pendente' | 'aprovado' | 'cancelado'
 }
+
 
 export type DemandaTipo = 'acao' | 'campanha' | 'evento';
 

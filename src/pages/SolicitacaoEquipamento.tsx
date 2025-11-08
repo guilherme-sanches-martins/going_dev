@@ -78,10 +78,7 @@ const salasReservadas = useMemo(
       alert('Selecione um equipamento.')
       return
     }
-    if (tipoReserva !== 'sala' && !localUso) {
-      alert('Informe o local de uso do equipamento.')
-      return
-    }
+    // Campo "Local de uso" opcional: não bloquear envio se vazio
 
     const { min, max } = getHoraRange(periodo)
     if (hora < min || hora > max) {
@@ -121,7 +118,7 @@ const salasReservadas = useMemo(
         bloco,
         salaId: tipoReserva !== 'equipamento' ? salaId : null,
         equipamentoId: tipoReserva !== 'sala' ? equipamentoId : null,
-        localUso: tipoReserva !== 'sala' ? localUso : null,
+        localUso: tipoReserva !== 'sala' ? (localUso || null) : null,
         solicitante,
         status: 'pendente',
       }
@@ -243,7 +240,7 @@ const salasReservadas = useMemo(
 
               <div>
                 <label className="block text-sm text-grayb-400 mb-1">
-                  Local de uso (se diferente da sala) *
+                  Local de uso (se diferente da sala)
                 </label>
                 <input
                   value={localUso}
