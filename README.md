@@ -1,73 +1,137 @@
-# React + TypeScript + Vite
+<p align="center">
+  <img src="./images/going-dev-icon.png" width="120" alt="Logo do Going Dev" />
+</p>
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+# 💻 Going Dev
 
-Currently, two official plugins are available:
+Aplicação **web** desenvolvida com **React + TypeScript + Vite**. O **Going Dev** é um projeto-base para estudos e prototipagem rápida de interfaces modernas, com foco em organização, padronização e DX.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## React Compiler
+## 🚀 Objetivo
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Aplicar os principais conceitos de **desenvolvimento frontend com React e Vite**, incluindo:
 
-## Expanding the ESLint configuration
+* Estruturação de projeto com **Vite**
+* Componentização e **reutilização** de UI
+* Gerenciamento de estado com **React Hooks**
+* Padronização com **TypeScript**, **ESLint** e **Prettier**
+* (Opcional) **React Router** para navegação entre páginas
+* Boas práticas de organização de pastas e assets
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+---
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## 🧩 Funcionalidades
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+* 🏠 **Home:** tela inicial com componentes de exemplo
+* 🧱 **Componentes Reutilizáveis:** botões, cards e helpers de layout
+* 🧭 **Rotas (opcional):** páginas de exemplo (Sobre/Detalhes)
+* 🔎 **Linting e Formatação:** configuração de ESLint/Prettier para padronizar código
+* 📦 **Build e Preview:** scripts prontos para desenvolvimento e produção
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+> Obs.: Adapte esta lista às features reais do seu projeto.
+
+---
+
+## 🖼️ Telas Principais
+
+|            Home            |            Lista            |              Detalhes             |             Sobre            |
+| :------------------------: | :-------------------------: | :-------------------------------: | :--------------------------: |
+| ![Home](./images/home.png) | ![Lista](./images/list.png) | ![Detalhes](./images/details.png) | ![Sobre](./images/about.png) |
+
+> Substitua as imagens em `./images/` pelos screenshots do projeto.
+
+---
+
+## 🗂️ Estrutura de Pastas
+
+```
+GOING_DEV/
+│
+├── src/
+│   ├── assets/                # Ícones, imagens, fontes
+│   ├── components/            # Componentes reutilizáveis de UI
+│   ├── pages/                 # Páginas (se usar React Router)
+│   ├── styles/                # Estilos globais / CSS Modules
+│   ├── App.tsx                # Raiz da aplicação
+│   └── main.tsx               # Ponto de entrada (Vite)
+│
+├── public/                    # Arquivos estáticos
+├── index.html                 # HTML principal
+├── package.json               # Dependências e scripts
+├── tsconfig.json              # Configuração TypeScript
+├── vite.config.ts             # Configuração do Vite
+├── eslint.config.js           # Regras de lint (opcional)
+└── README.md
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## ⚙️ Instalação e Execução
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+# Clone o repositório
+git clone https://github.com/seu-usuario/going-dev.git
+
+# Acesse a pasta
+cd going-dev
+
+# Instale as dependências
+npm install
+
+# Ambiente de desenvolvimento
+npm run dev
+# Acesse em http://localhost:5173
+
+# Build de produção
+npm run build
+
+# Pré-visualização do build
+npm run preview
 ```
+
+---
+
+## 🛠️ Tecnologias Utilizadas
+
+* **React** — Biblioteca principal de UI
+* **Vite** — Bundler e dev server rápidos
+* **TypeScript** — Tipagem estática
+* **ESLint + Prettier** — Padronização de código
+* (Opcional) **React Router** — Navegação entre páginas
+
+---
+
+## 🧠 Aprendizados
+
+* Organização modular de componentes e páginas
+* Uso de **hooks** (`useState`, `useEffect`, etc.)
+* Padronização com **ESLint/Prettier** e tipos com **TypeScript**
+* Pipeline de **build** e **preview** com Vite
+
+---
+
+## 👩‍💻 Equipe de Desenvolvimento
+
+| Nome            | Função        |
+| --------------- | ------------- |
+| [Seu Nome Aqui] | Frontend / UI |
+| [Outro Nome]    | Infra e Build |
+| [Outro Nome]    | Documentação  |
+
+> Atualize com os nomes e responsabilidades reais.
+
+---
+
+## 🏫 Contexto
+
+Projeto de estudo/desenvolvimento com **React + Vite**. Ajuste esta seção caso o projeto esteja vinculado a uma disciplina, curso ou instituição.
+
+---
+
+## ⚠️ Observações
+
+* Projeto com fins **educacionais** (ajuste conforme necessário).
+* Substitua placeholders (imagens, nomes e links) pelos dados reais do seu repositório.
+
+---
