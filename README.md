@@ -37,9 +37,8 @@ Aplicar os principais conceitos de **desenvolvimento frontend com React e Vite**
 
 |            Painel do Solicitante            |              Painel de Colaboradores            |
 | :-----------------------------------------: | :---------------------------------------------: |
-| ![Home](./images/home.png)                  |  ![Sobre](./images/about.png)                   |
+| ![Home](./images/solicitante.png)           |  ![Sobre](./images/colaboradores.png)           |
 
-> Substitua as imagens em `./images/` pelos screenshots do projeto.
 
 ---
 
