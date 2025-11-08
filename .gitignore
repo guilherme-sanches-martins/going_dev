@@ -1,0 +1,22 @@
+# Node dependencies
+node_modules/
+dist/
+
+# Local env files (manter apenas exemplo)
+.env.local
+.env.*.local
+!.env.example
+
+# Firebase local configs (logs e emuladores)
+.firebase/
+firebase-debug.log
+firestore-debug.log
+
+# IDEs e caches
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+.vite/
+*.tsbuildinfo
+npm-debug.log*
