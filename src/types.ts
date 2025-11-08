@@ -5,12 +5,14 @@ export type EquipamentoTipo = 'Datashow' | 'Notebook' | 'Microfone' | 'Caixa de 
 export type EquipStatus = 'disponivel' | 'manutencao';
 
 export interface Equipamento {
-  id: string;
-  nome: string;
-  tipo: EquipamentoTipo;
-  bloco: 'B' | 'C' | 'D';
-  status: EquipStatus;
+  id: string
+  identificacao: string  // Novo campo
+  nome: string
+  tipo: EquipamentoTipo
+  bloco: 'B' | 'C' | 'D'
+  status: EquipStatus
 }
+
 
 export interface ReservaItem {
   id: string;             // uuid

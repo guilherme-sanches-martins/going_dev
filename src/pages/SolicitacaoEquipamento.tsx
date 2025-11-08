@@ -1,10 +1,10 @@
 import { useMemo, useState } from 'react'
 import { addDoc, collection, getDocs, query, where } from 'firebase/firestore'
 import { db } from '../firebaseConfig'
-import { MOCK_EQUIPAMENTOS } from '../data/equipamentos'
 import { Equipamento, Periodo, ReservaItem } from '../types'
 import MapaSVG from '../components/MapaSVG'
 import { useReservasPorSlot } from '../hooks/useReservasPorSlot'
+import { useEquipamentos } from '../hooks/useEquipamentos'
 
 function iso(d: Date) {
   return d.toISOString().slice(0, 10)
@@ -13,15 +13,16 @@ function iso(d: Date) {
 export default function SolicitacaoEquipamento() {
   // Estados principais
   const [data, setData] = useState<string>(iso(new Date()))
-  const [hora, setHora] = useState<string>('') // ⏰ novo campo
+  const [hora, setHora] = useState<string>('') 
   const [periodo, setPeriodo] = useState<Periodo>('matutino')
   const [bloco, setBloco] = useState<'B' | 'C' | 'D'>('B')
   const [salaId, setSalaId] = useState<string>('')
   const [equipamentoId, setEquipamentoId] = useState<string>('')
   const [solicitante, setSolicitante] = useState<string>('')
 
-  // Hook Firestore → reservas existentes
+  // Firestore hooks
   const reservasFirestore = useReservasPorSlot(data, periodo)
+  const equipamentosFirestore = useEquipamentos()
 
   // Salas reservadas (Firestore)
   const salasReservadas = useMemo(
@@ -29,33 +30,29 @@ export default function SolicitacaoEquipamento() {
     [reservasFirestore]
   )
 
-  // Equipamentos disponíveis
+  // Equipamentos disponíveis (somente os com status "disponivel" e não reservados)
   const equipamentosDisponiveis = useMemo<Equipamento[]>(() => {
     const ocupados = new Set(reservasFirestore.map((r) => r.equipamentoId))
-    return MOCK_EQUIPAMENTOS.filter(
+    return equipamentosFirestore.filter(
       (eq) => eq.status === 'disponivel' && !ocupados.has(eq.id)
     )
-  }, [reservasFirestore])
+  }, [equipamentosFirestore, reservasFirestore])
 
   // 🧭 Faixas de hora por período
   function getHoraRange(periodo: Periodo) {
     switch (periodo) {
-      case 'matutino':
-        return { min: '06:00', max: '12:00' }
-      case 'vespertino':
-        return { min: '12:00', max: '18:00' }
-      case 'noturno':
-        return { min: '18:00', max: '22:00' }
-      default:
-        return { min: '06:00', max: '22:00' }
+      case 'matutino': return { min: '06:00', max: '12:00' }
+      case 'vespertino': return { min: '12:00', max: '18:00' }
+      case 'noturno': return { min: '18:00', max: '22:00' }
+      default: return { min: '06:00', max: '22:00' }
     }
   }
 
   // 🧩 Seleção no mapa → identifica bloco corretamente
   function onSelectSalaFromMap(id: string) {
     setSalaId(id)
-
     let blocoDetectado: 'B' | 'C' | 'D' = 'B'
+
     if (id.startsWith('AUD_')) {
       const match = id.match(/^AUD_([BCD])/)
       if (match && ['B', 'C', 'D'].includes(match[1])) {
@@ -80,7 +77,6 @@ export default function SolicitacaoEquipamento() {
       return
     }
 
-    // 🔍 Valida se a hora está dentro da faixa do período
     const { min, max } = getHoraRange(periodo)
     if (hora < min || hora > max) {
       alert(`A hora selecionada (${hora}) não corresponde ao período ${periodo}.`)
@@ -88,7 +84,7 @@ export default function SolicitacaoEquipamento() {
     }
 
     try {
-      // 🔎 Busca reservas já existentes para o mesmo horário/sala
+      // 🔎 Busca conflitos no mesmo horário/sala
       const reservasRef = collection(db, 'reservas')
       const q = query(
         reservasRef,
@@ -104,7 +100,7 @@ export default function SolicitacaoEquipamento() {
         return
       }
 
-      // ✅ Nenhum conflito → grava a reserva
+      // ✅ Nenhum conflito → grava nova reserva
       const novaReserva: Omit<ReservaItem, 'id'> & { hora: string } = {
         data,
         hora,
@@ -208,7 +204,7 @@ export default function SolicitacaoEquipamento() {
               <option value="">Selecione...</option>
               {equipamentosDisponiveis.map((eq) => (
                 <option key={eq.id} value={eq.id}>
-                  {eq.nome} — {eq.tipo} ({eq.bloco})
+                  {eq.identificacao} — {eq.nome} ({eq.tipo}, Bloco {eq.bloco})
                 </option>
               ))}
             </select>
@@ -252,20 +248,17 @@ export default function SolicitacaoEquipamento() {
                 </tr>
               </thead>
               <tbody>
-                {reservasFirestore.map((r) => (
-                  <tr key={r.id} className="border-b border-grayb-100">
-                    <td className="py-1">{r.salaId}</td>
-                    <td>{(r as any).hora || '-'}</td>
-                    <td>
-                      {
-                        MOCK_EQUIPAMENTOS.find(
-                          (eq) => eq.id === r.equipamentoId
-                        )?.nome
-                      }
-                    </td>
-                    <td>{r.solicitante}</td>
-                  </tr>
-                ))}
+                {reservasFirestore.map((r) => {
+                  const eq = equipamentosFirestore.find((e) => e.id === r.equipamentoId)
+                  return (
+                    <tr key={r.id} className="border-b border-grayb-100">
+                      <td className="py-1">{r.salaId}</td>
+                      <td>{(r as any).hora || '-'}</td>
+                      <td>{eq ? `${eq.identificacao} — ${eq.nome}` : 'Equipamento removido'}</td>
+                      <td>{r.solicitante}</td>
+                    </tr>
+                  )
+                })}
               </tbody>
             </table>
           )}

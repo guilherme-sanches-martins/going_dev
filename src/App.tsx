@@ -4,6 +4,7 @@ import Solicitante from './pages/Solicitante'
 import Colaboradores from './pages/Colaboradores'
 import AdminAudiovisualPlaceholder from './pages/AdminAudiovisualPlaceholder'
 import TestFirestore from './testes/TestFirestore'
+import ColaboradorAudiovisual from './pages/ColaboradorAudiovisual'
 
 export default function App() {
   return (
@@ -15,6 +16,7 @@ export default function App() {
           <Route path="/colaboradores" element={<Colaboradores />} />
           <Route path="/admin/audiovisual" element={<AdminAudiovisualPlaceholder />} />
           <Route path="/test-firestore" element={<TestFirestore />} />
+          <Route path="/colaborador/audiovisual" element={<ColaboradorAudiovisual />} />
         </Routes>
       </main>
     </div>

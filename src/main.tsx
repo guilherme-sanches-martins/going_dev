@@ -15,6 +15,3 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
   </React.StrictMode>,
 )
 
-//import { seedTeste } from './testes/firebaseTest'
-//seedTeste()
-
