@@ -35,9 +35,9 @@ Aplicar os principais conceitos de **desenvolvimento frontend com React e Vite**
 
 ## 🖼️ Telas Principais
 
-|            Home            |            Lista            |              Detalhes             |             Sobre            |
-| :------------------------: | :-------------------------: | :-------------------------------: | :--------------------------: |
-| ![Home](./images/home.png) | ![Lista](./images/list.png) | ![Detalhes](./images/details.png) | ![Sobre](./images/about.png) |
+|            Painel do Solicitante            |              Painel de Colaboradores            |
+| :-----------------------------------------: | :---------------------------------------------: |
+| ![Home](./images/home.png)                  |  ![Sobre](./images/about.png)                   |
 
 > Substitua as imagens em `./images/` pelos screenshots do projeto.
 
